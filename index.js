@@ -1,4 +1,5 @@
 const SubscriberResource = require('./resources/subscriber');
+const SubscriberTrigger = require('./triggers/new-subscriber-trigger');
 const authentication = require('./authentication');
 
 
