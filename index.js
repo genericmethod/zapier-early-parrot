@@ -1,5 +1,4 @@
-const SubscriberResource = require('./resources/subscriber');
-const SubscriberTrigger = require('./triggers/new-subscriber-trigger');
+const newSubscriberTrigger = require('./triggers/new-subscriber-trigger');
 const authentication = require('./authentication');
 
 
@@ -37,11 +36,11 @@ const App = {
 
   // If you want to define optional resources to simplify creation of triggers, searches, creates - do that here!
   resources: {
-    [SubscriberResource.key]: SubscriberResource,
   },
 
   // If you want your trigger to show up, you better include it here!
   triggers: {
+    newSubscriberTrigger
   },
 
   // If you want your searches to show up, you better include it here!

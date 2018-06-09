@@ -2,12 +2,12 @@
 //TODO Early Parrot needs to implement an endpoint that can register a zapier url that will receive EP data
 //TODO Early Parrot to implement POST /api/hook (example)
 //TODO Early parrot must send data to the zapier url once the New Subscriber Event is fired on EP
-const subscribeHook = (z, bundle) => {
+const registerHook = (z, bundle) => {
 
   // bundle.targetUrl has the Hook URL this app should call when a subscriber is created.
   const data = {
     url: bundle.targetUrl,
-    style: bundle.inputData.style //TODO Remove and replace with campaignId and any other data?
+    campaignId: bundle.inputData.campaignId
   };
 
   // You can build requests and our client will helpfully inject all the variables
@@ -21,14 +21,14 @@ const subscribeHook = (z, bundle) => {
 
   // You may return a promise or a normal data structure from any perform method.
   return z.request(options)
-    .then((response) => JSON.parse(response.content));
+    .then((response) => JSON.parse(response.content)); //TODO Early parrot - the subscribe response should  contain the hookId (id)
 };
 
 //TODO Early Parrot DELETE /api/hook
-const unsubscribeHook = (z, bundle) => {
+const unregisterHook = (z, bundle) => {
   // bundle.subscribeData contains the parsed response JSON from the subscribe
   // request made initially.
-  const hookId = bundle.subscribeData.id;
+  const hookId = bundle.subscribeData.id; // TODO make sure Early parrot has returned the hookId in the subscribe response
 
   // You can build requests and our client will helpfully inject all the variables
   // you need to complete. You can also register middleware to control this.
@@ -42,27 +42,26 @@ const unsubscribeHook = (z, bundle) => {
     .then((response) => JSON.parse(response.content));
 };
 
-const getRecipe = (z, bundle) => {
+const getSubscriber = (z, bundle) => {
   // bundle.cleanedRequest will include the parsed JSON object (if it's not a
   // test poll) and also a .querystring property with the URL's query string.
-  const recipe = {
-    id: bundle.cleanedRequest.id,
-    name: bundle.cleanedRequest.name,
-    directions: bundle.cleanedRequest.directions,
-    style: bundle.cleanedRequest.style,
-    authorId: bundle.cleanedRequest.authorId,
-    createdAt: bundle.cleanedRequest.createdAt
+  const subscriber = {
+    id: bundle.cleanedRequest.subscriberId,
+    name: bundle.cleanedRequest.campaignId,
+    directions: bundle.cleanedRequest.firstname,
+    style: bundle.cleanedRequest.lastname,
+    authorId: bundle.cleanedRequest.email
   };
 
-  return [recipe];
+  return [subscriber];
 };
 
-const getFallbackRealRecipe = (z, bundle) => {
+const getFallbackRealSubscriber = (z, bundle) => {
   // For the test poll, you should get some real data, to aid the setup process.
   const options = {
-    url: 'http://57b20fb546b57d1100a3c405.mockapi.io/api/subscriber/',
+    url: 'http://5b1a857783b6190014ca3ad6.mockapi.io/api/subscriber',
     params: {
-      style: bundle.inputData.style
+      campaignId: bundle.inputData.campaignId
     }
   };
 
@@ -73,11 +72,12 @@ const getFallbackRealRecipe = (z, bundle) => {
 // We recommend writing your triggers separate like this and rolling them
 // into the App definition at the end.
 module.exports = {
-  key: 'subscriber',
+
+  key: 'newSubscriberTrigger',
 
   // You'll want to provide some helpful display labels and descriptions
   // for users. Zapier will put them into the UX.
-  noun: 'Subscriber',
+  noun: 'New Subscriber',
   display: {
     label: 'New Subscriber',
     description: 'Trigger when a new subscriber is added.'
@@ -86,29 +86,31 @@ module.exports = {
   // `operation` is where the business logic goes.
   operation: {
 
-    // `inputFields` can define the fields a user could provide,
+    // `inputFields` can define the fields a user could provide in the zapier interface
     // we'll pass them in as `bundle.inputData` later.
     inputFields: [
-      {key: 'style', type: 'string', helpText: 'Which styles of cuisine this should trigger on.'}
+      //TODO eventually this should be a dropdown list of campaigns
+      {key: 'campaignId', required: true, label: 'Campaign Id', type: 'string', helpText: 'The ID of the campaign with which the subscriber is associated'}
 
     ],
 
     type: 'hook',
 
-    performSubscribe: subscribeHook,
-    performUnsubscribe: unsubscribeHook,
+    performSubscribe: registerHook,
+    performUnsubscribe: unregisterHook,
 
-    perform: getRecipe,
-    performList: getFallbackRealRecipe,
+    perform: getSubscriber,
+    performList: getFallbackRealSubscriber,
 
     // In cases where Zapier needs to show an example record to the user, but we are unable to get a live example
     // from the API, Zapier will fallback to this hard-coded sample. It should reflect the data structure of
     // returned records, and have obviously dummy values that we can show to any user.
     sample: {
-      subscriberId: 1,
-      subscriberName: 'John',
-      subscriberSurname: 'Smith',
-      subscriberEmail: 'hello@earlyparrot.com'
+         "subscriberId":"5a9d2de2e801f464911251b6",
+         "campaignId":"5a96e836abc9f47c36ef360c",
+         "firstname":"Joe",
+         "lastname":"Smith",
+         "email":"joe@gmail.com",
     },
 
     // If the resource can have fields that are custom on a per-user basis, define a function to fetch the custom
@@ -116,12 +118,11 @@ module.exports = {
     // outputFields: () => { return []; }
     // Alternatively, a static field definition should be provided, to specify labels for the fields
     outputFields: [
-      {key: 'id', label: 'ID'},
-      {key: 'createdAt', label: 'Created At'},
-      {key: 'name', label: 'Name'},
-      {key: 'directions', label: 'Directions'},
-      {key: 'authorId', label: 'Author ID'},
-      {key: 'style', label: 'Style'},
+      {key: 'subscriberId', label: 'Subscriber ID'},
+      {key: 'campaignId', label: 'Campaign ID'},
+      {key: 'firstname', label: 'First Name'},
+      {key: 'lastname', label: 'Last Name'},
+      {key: 'email', label: 'Email Address'},
     ]
   }
 };
