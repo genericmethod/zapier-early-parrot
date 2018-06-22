@@ -34,10 +34,13 @@ const App = {
   },
 
   // If you want your trigger to show up, you better include it here!
-  triggers: {
-    newSubscriberTrigger, newReferralTrigger
-    , newRewardTrigger, newReferredSubscriberTrigger, newInviteTrigger
-  },
+  triggers: [
+    newSubscriberTrigger, 
+    newReferredSubscriberTrigger, 
+    newRewardTrigger,
+    newInviteTrigger,
+    newReferralTrigger
+  ],
 
   // If you want your searches to show up, you better include it here!
   searches: {

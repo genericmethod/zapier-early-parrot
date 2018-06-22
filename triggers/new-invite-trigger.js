@@ -3,8 +3,6 @@ const registerHook = (z, bundle) => {
 
   const campaignId = bundle.inputData.campaignId;
 
-  z.console.log(`Zapier target url ${bundle.targetUrl}`);
-
   // bundle.targetUrl has the Hook URL this app should call when a subscriber is created.
   const data = {
     url: bundle.targetUrl
@@ -13,7 +11,7 @@ const registerHook = (z, bundle) => {
   // You can build requests and our client will helpfully inject all the variables
   // you need to complete. You can also register middleware to control this.
   const options = {
-    url: `https://devadmin.earlyparrot.com/api/campaigns/${campaignId}/newSubscriberZapier`,
+    url: `https://devadmin.earlyparrot.com/api/campaigns/${campaignId}/newInviteZapier`,
     method: 'POST',
     headers: {
       'Content-Type' : 'application/json; charset=utf-8'
@@ -33,7 +31,7 @@ const unregisterHook = (z, bundle) => {
   // You can build requests and our client will helpfully inject all the variables
   // you need to complete. You can also register middleware to control this.
   const options = {
-    url: `https://devadmin.earlyparrot.com/api/campaigns/${campaignId}/newSubscriberZapier`,
+    url: `https://devadmin.earlyparrot.com/api/campaigns/${campaignId}/newInviteZapier`,
     method: 'DELETE',
   };
 
@@ -42,18 +40,19 @@ const unregisterHook = (z, bundle) => {
     .then((response) => JSON.parse(response.content));
 };
 
-const getSubscriber = (z, bundle) => {
+const getInvite = (z, bundle) => {
   // bundle.cleanedRequest will include the parsed JSON object (if it's not a
   // test poll) and also a .querystring property with the URL's query string.
-  const subscriber = {
-    subscriberId: bundle.cleanedRequest.subscriberId,
-    campaignId: bundle.cleanedRequest.campaignId,
-    firstname: bundle.cleanedRequest.firstname,
-    lastname: bundle.cleanedRequest.lastname,
-    email: bundle.cleanedRequest.email
+  const invite = {
+    inviteFromEmail : bundle.cleanedRequest.inviteFromEmail,
+    inviteFromName : bundle.cleanedRequest.inviteFromName,
+    email : bundle.cleanedRequest.email,
+    couponCode : bundle.cleanedRequest.couponCode,
+    referUrl : bundle.cleanedRequest.referUrl,
+    campaignId : bundle.cleanedRequest.campaignId
   };
 
-  return [subscriber];
+  return [invite];
 };
 
 const getFallbackRealSubscriber = (z, bundle) => {
@@ -73,14 +72,14 @@ const getFallbackRealSubscriber = (z, bundle) => {
 // into the App definition at the end.
 module.exports = {
 
-  key: 'newSubscriberTrigger',
+  key: 'newInviteTrigger',
 
   // You'll want to provide some helpful display labels and descriptions
   // for users. Zapier will put them into the UX.
-  noun: 'New Subscriber',
+  noun: 'New Invite',
   display: {
-    label: 'New Subscriber',
-    description: 'Trigger when a new subscriber is added.'
+    label: 'New Invite',
+    description: 'Trigger when a new invite is sent.'
   },
 
   // `operation` is where the business logic goes.
@@ -99,18 +98,19 @@ module.exports = {
     performSubscribe: registerHook,
     performUnsubscribe: unregisterHook,
 
-    perform: getSubscriber,
-    performList: getFallbackRealSubscriber,
+    perform: getInvite,
+    performList: getFallbackRealInvite,
 
     // In cases where Zapier needs to show an example record to the user, but we are unable to get a live example
     // from the API, Zapier will fallback to this hard-coded sample. It should reflect the data structure of
     // returned records, and have obviously dummy values that we can show to any user.
     sample: {
-         "subscriberId":"5a9d2de2e801f464911251b6",
-         "campaignId":"5a96e836abc9f47c36ef360c",
-         "firstname":"Joe",
-         "lastname":"Smith",
-         "email":"joe@gmail.com"
+      "inviteFromEmail" : "gaetano@earlyparrot.com",
+      "inviteFromName" : "Gaetano Caruana",
+      "email" : "gcaruana@gmail.com",
+      "couponCode" :"123",
+      "referUrl" : "sharedUrl",
+      "campaignId" : "5a96e836abc9f47c36ef360c"
     },
 
     // If the resource can have fields that are custom on a per-user basis, define a function to fetch the custom
@@ -118,11 +118,12 @@ module.exports = {
     // outputFields: () => { return []; }
     // Alternatively, a static field definition should be provided, to specify labels for the fields
     outputFields: [
-      {key: 'subscriberId', label: 'Subscriber ID'},
-      {key: 'campaignId', label: 'Campaign ID'},
-      {key: 'firstname', label: 'First Name'},
-      {key: 'lastname', label: 'Last Name'},
-      {key: 'email', label: 'Email Address'},
+      {key: 'inviteFromEmail', label: 'Subscriber ID'},
+      {key: 'inviteFromName', label: 'Campaign ID'},
+      {key: 'email', label: 'Email'},
+      {key: 'couponCode', label: 'Coupon Code'},
+      {key: 'referUrl', label: 'Refer Url'},
+      {key: 'campaignID', label: 'Campaign ID'}
     ]
   }
 };

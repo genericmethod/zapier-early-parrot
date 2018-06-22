@@ -3,8 +3,6 @@ const registerHook = (z, bundle) => {
 
   const campaignId = bundle.inputData.campaignId;
 
-  z.console.log(`Zapier target url ${bundle.targetUrl}`);
-
   // bundle.targetUrl has the Hook URL this app should call when a subscriber is created.
   const data = {
     url: bundle.targetUrl
@@ -13,7 +11,7 @@ const registerHook = (z, bundle) => {
   // You can build requests and our client will helpfully inject all the variables
   // you need to complete. You can also register middleware to control this.
   const options = {
-    url: `https://devadmin.earlyparrot.com/api/campaigns/${campaignId}/newSubscriberZapier`,
+    url: `https://devadmin.earlyparrot.com/api/campaigns/${campaignId}/newReferralZapier`,
     method: 'POST',
     headers: {
       'Content-Type' : 'application/json; charset=utf-8'
@@ -33,7 +31,7 @@ const unregisterHook = (z, bundle) => {
   // You can build requests and our client will helpfully inject all the variables
   // you need to complete. You can also register middleware to control this.
   const options = {
-    url: `https://devadmin.earlyparrot.com/api/campaigns/${campaignId}/newSubscriberZapier`,
+    url: `https://devadmin.earlyparrot.com/api/campaigns/${campaignId}/newReferralZapier`,
     method: 'DELETE',
   };
 
@@ -42,18 +40,19 @@ const unregisterHook = (z, bundle) => {
     .then((response) => JSON.parse(response.content));
 };
 
-const getSubscriber = (z, bundle) => {
+const getReferral = (z, bundle) => {
   // bundle.cleanedRequest will include the parsed JSON object (if it's not a
   // test poll) and also a .querystring property with the URL's query string.
-  const subscriber = {
+  const referral = {
     subscriberId: bundle.cleanedRequest.subscriberId,
     campaignId: bundle.cleanedRequest.campaignId,
     firstname: bundle.cleanedRequest.firstname,
     lastname: bundle.cleanedRequest.lastname,
-    email: bundle.cleanedRequest.email
+    email: bundle.cleanedRequest.email,
+    totalReferral: bundle.cleanedRequest.totalReferral
   };
 
-  return [subscriber];
+  return [referral];
 };
 
 const getFallbackRealSubscriber = (z, bundle) => {
@@ -77,9 +76,9 @@ module.exports = {
 
   // You'll want to provide some helpful display labels and descriptions
   // for users. Zapier will put them into the UX.
-  noun: 'New Referral Trigger',
+  noun: 'New Referral',
   display: {
-    label: 'New Referral Trigger',
+    label: 'New Referral',
     description: 'Trigger when a new referral is added.'
   },
 
@@ -99,18 +98,19 @@ module.exports = {
     performSubscribe: registerHook,
     performUnsubscribe: unregisterHook,
 
-    perform: getSubscriber,
-    performList: getFallbackRealSubscriber,
+    perform: getReferral,
+    performList: getFallbackRealReferral,
 
     // In cases where Zapier needs to show an example record to the user, but we are unable to get a live example
     // from the API, Zapier will fallback to this hard-coded sample. It should reflect the data structure of
     // returned records, and have obviously dummy values that we can show to any user.
     sample: {
-         "subscriberId":"5a9d2de2e801f464911251b6",
-         "campaignId":"5a96e836abc9f47c36ef360c",
-         "firstname":"Joe",
-         "lastname":"Smith",
-         "email":"joe@gmail.com"
+      "totalReferral": 3,
+      "email":"joe@gmail.com",
+      "firstname":"Joe",
+      "lastname":"Smith",
+      "subscriberId":"5a9d2de2e801f464911251b6",
+      "campaignId":"5a96e836abc9f47c36ef360c"
     },
 
     // If the resource can have fields that are custom on a per-user basis, define a function to fetch the custom
@@ -123,6 +123,21 @@ module.exports = {
       {key: 'firstname', label: 'First Name'},
       {key: 'lastname', label: 'Last Name'},
       {key: 'email', label: 'Email Address'},
+      {key: 'totalReferral', label: 'Total Number of Referrals'},
     ]
   }
 };
+
+
+/**
+ * NewReferral
+
+{
+  “totalReferral”: 3,
+  "email":"joe@gmail.com",
+  "firstname":"Joe",
+  "lastname":"Smith",
+  "subscriberId":"5a9d2de2e801f464911251b6",
+  "campaignId":"5a96e836abc9f47c36ef360c"
+}
+ */

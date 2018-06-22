@@ -3,8 +3,6 @@ const registerHook = (z, bundle) => {
 
   const campaignId = bundle.inputData.campaignId;
 
-  z.console.log(`Zapier target url ${bundle.targetUrl}`);
-
   // bundle.targetUrl has the Hook URL this app should call when a subscriber is created.
   const data = {
     url: bundle.targetUrl
@@ -13,7 +11,7 @@ const registerHook = (z, bundle) => {
   // You can build requests and our client will helpfully inject all the variables
   // you need to complete. You can also register middleware to control this.
   const options = {
-    url: `https://devadmin.earlyparrot.com/api/campaigns/${campaignId}/newSubscriberZapier`,
+    url: `https://devadmin.earlyparrot.com/api/campaigns/${campaignId}/newRewardZapier`,
     method: 'POST',
     headers: {
       'Content-Type' : 'application/json; charset=utf-8'
@@ -33,7 +31,7 @@ const unregisterHook = (z, bundle) => {
   // You can build requests and our client will helpfully inject all the variables
   // you need to complete. You can also register middleware to control this.
   const options = {
-    url: `https://devadmin.earlyparrot.com/api/campaigns/${campaignId}/newSubscriberZapier`,
+    url: `https://devadmin.earlyparrot.com/api/campaigns/${campaignId}/newRewardZapier`,
     method: 'DELETE',
   };
 
@@ -42,21 +40,24 @@ const unregisterHook = (z, bundle) => {
     .then((response) => JSON.parse(response.content));
 };
 
-const getSubscriber = (z, bundle) => {
+const getReward = (z, bundle) => {
   // bundle.cleanedRequest will include the parsed JSON object (if it's not a
   // test poll) and also a .querystring property with the URL's query string.
-  const subscriber = {
-    subscriberId: bundle.cleanedRequest.subscriberId,
-    campaignId: bundle.cleanedRequest.campaignId,
-    firstname: bundle.cleanedRequest.firstname,
-    lastname: bundle.cleanedRequest.lastname,
-    email: bundle.cleanedRequest.email
+  const reward = {
+    email: bundle.cleanedRequest.email,
+    rewardId: bundle.cleanedRequest.rewardId,
+    rewardName: bundle.cleanedRequest.rewardName,
+    rewardDescription: bundle.cleanedRequest.rewardDescription,
+    rewardImage: bundle.cleanedRequest.rewardImage,
+    point: bundle.cleanedRequest.point,
+    pointType: bundle.cleanedRequest.pointType,
+    campaignId: bundle.cleanedRequest.campaignId 
   };
 
-  return [subscriber];
+  return [reward];
 };
 
-const getFallbackRealSubscriber = (z, bundle) => {
+const getFallbackRealReward = (z, bundle) => {
   // For the test poll, you should get some real data, to aid the setup process.
   const options = {
     url: 'http://5b1a857783b6190014ca3ad6.mockapi.io/api/subscriber', //TODO
@@ -73,14 +74,14 @@ const getFallbackRealSubscriber = (z, bundle) => {
 // into the App definition at the end.
 module.exports = {
 
-  key: 'newSubscriberTrigger',
+  key: 'newRewardTrigger',
 
   // You'll want to provide some helpful display labels and descriptions
   // for users. Zapier will put them into the UX.
-  noun: 'New Subscriber',
+  noun: 'New Reward',
   display: {
-    label: 'New Subscriber',
-    description: 'Trigger when a new subscriber is added.'
+    label: 'New Reward',
+    description: 'Trigger when a new reward is sent.'
   },
 
   // `operation` is where the business logic goes.
@@ -99,18 +100,21 @@ module.exports = {
     performSubscribe: registerHook,
     performUnsubscribe: unregisterHook,
 
-    perform: getSubscriber,
-    performList: getFallbackRealSubscriber,
+    perform: getReward,
+    performList: getFallbackRealReward,
 
     // In cases where Zapier needs to show an example record to the user, but we are unable to get a live example
     // from the API, Zapier will fallback to this hard-coded sample. It should reflect the data structure of
     // returned records, and have obviously dummy values that we can show to any user.
     sample: {
-         "subscriberId":"5a9d2de2e801f464911251b6",
-         "campaignId":"5a96e836abc9f47c36ef360c",
-         "firstname":"Joe",
-         "lastname":"Smith",
-         "email":"joe@gmail.com"
+      "email" : "gaetano@earlyparrot.com",
+      "rewardId": 123,
+      "rewardName" : "Free T-Shirt",
+      "rewardDescription": "Free T-Shirt",
+      "rewardImage" : "http://example.com/example.jpg",
+      "point" : 1,
+      "pointType" : "referrals",
+      "campaignId" : "5a96e836abc9f47c36ef360c"
     },
 
     // If the resource can have fields that are custom on a per-user basis, define a function to fetch the custom
@@ -118,11 +122,29 @@ module.exports = {
     // outputFields: () => { return []; }
     // Alternatively, a static field definition should be provided, to specify labels for the fields
     outputFields: [
-      {key: 'subscriberId', label: 'Subscriber ID'},
-      {key: 'campaignId', label: 'Campaign ID'},
-      {key: 'firstname', label: 'First Name'},
-      {key: 'lastname', label: 'Last Name'},
       {key: 'email', label: 'Email Address'},
+      {key: 'rewardId', label: 'Reward ID'},
+      {key: 'rewardDescription', label: 'Reward Description'},
+      {key: 'rewardImage', label: 'Reward Image URL'},
+      {key: 'point', label: 'ENumber of Points'},
+      {key: 'pointType', label: 'Type of Points'},
+      {key: 'campaignId', label: 'Campaign ID'},
     ]
   }
 };
+
+/**
+ * NewReward
+
+{
+  "email":"gaetano@earlyparrot.com",
+  "rewardId":123,
+  "rewardName" :”rewardName bla bla”,
+  "rewardDescription"::”rewardName description”,
+  "rewardImage"::”http://…..”,
+  "point"::1,
+  "pointType"::”referrals”,
+  "campaignId":"5a96e836abc9f47c36ef360c"
+}
+
+ */

@@ -3,8 +3,6 @@ const registerHook = (z, bundle) => {
 
   const campaignId = bundle.inputData.campaignId;
 
-  z.console.log(`Zapier target url ${bundle.targetUrl}`);
-
   // bundle.targetUrl has the Hook URL this app should call when a subscriber is created.
   const data = {
     url: bundle.targetUrl
@@ -13,7 +11,7 @@ const registerHook = (z, bundle) => {
   // You can build requests and our client will helpfully inject all the variables
   // you need to complete. You can also register middleware to control this.
   const options = {
-    url: `https://devadmin.earlyparrot.com/api/campaigns/${campaignId}/newSubscriberZapier`,
+    url: `https://devadmin.earlyparrot.com/api/campaigns/${campaignId}/newReferredSubscriberZapier`,
     method: 'POST',
     headers: {
       'Content-Type' : 'application/json; charset=utf-8'
@@ -33,7 +31,7 @@ const unregisterHook = (z, bundle) => {
   // You can build requests and our client will helpfully inject all the variables
   // you need to complete. You can also register middleware to control this.
   const options = {
-    url: `https://devadmin.earlyparrot.com/api/campaigns/${campaignId}/newSubscriberZapier`,
+    url: `https://devadmin.earlyparrot.com/api/campaigns/${campaignId}/newRefferredSubscriberZapier`,
     method: 'DELETE',
   };
 
@@ -42,21 +40,26 @@ const unregisterHook = (z, bundle) => {
     .then((response) => JSON.parse(response.content));
 };
 
-const getSubscriber = (z, bundle) => {
+const getReferredSubscriber = (z, bundle) => {
   // bundle.cleanedRequest will include the parsed JSON object (if it's not a
   // test poll) and also a .querystring property with the URL's query string.
-  const subscriber = {
-    subscriberId: bundle.cleanedRequest.subscriberId,
-    campaignId: bundle.cleanedRequest.campaignId,
-    firstname: bundle.cleanedRequest.firstname,
-    lastname: bundle.cleanedRequest.lastname,
-    email: bundle.cleanedRequest.email
+  const referredSubscriber = {
+    referralHash:bundle.cleanedRequest.referralHash,
+    referralChannel:bundle.cleanedRequest.referralChannel,
+    referralUserEmail:bundle.cleanedRequest.referralUserEmail,
+    referralUserId:bundle.cleanedRequest.referralUserId,
+    email:bundle.cleanedRequest.email,
+    firstname:bundle.cleanedRequest.firstname,
+    lastname:bundle.cleanedRequest.lastname,
+    ip:bundle.cleanedRequest.ip,
+    subscriberId:bundle.cleanedRequest.subscriberId,
+    campaignId:bundle.cleanedRequest.campaignId
   };
 
-  return [subscriber];
+  return [referredSubscriber];
 };
 
-const getFallbackRealSubscriber = (z, bundle) => {
+const getFallbackRealReferredSubscriber = (z, bundle) => {
   // For the test poll, you should get some real data, to aid the setup process.
   const options = {
     url: 'http://5b1a857783b6190014ca3ad6.mockapi.io/api/subscriber', //TODO
@@ -73,14 +76,14 @@ const getFallbackRealSubscriber = (z, bundle) => {
 // into the App definition at the end.
 module.exports = {
 
-  key: 'newSubscriberTrigger',
+  key: 'newReferredSubscriberTrigger',
 
   // You'll want to provide some helpful display labels and descriptions
   // for users. Zapier will put them into the UX.
-  noun: 'New Subscriber',
+  noun: 'New Referred Subscriber',
   display: {
-    label: 'New Subscriber',
-    description: 'Trigger when a new subscriber is added.'
+    label: 'New Referred Subscriber',
+    description: 'Trigger when a new referred subscriber is added.'
   },
 
   // `operation` is where the business logic goes.
@@ -106,11 +109,16 @@ module.exports = {
     // from the API, Zapier will fallback to this hard-coded sample. It should reflect the data structure of
     // returned records, and have obviously dummy values that we can show to any user.
     sample: {
-         "subscriberId":"5a9d2de2e801f464911251b6",
-         "campaignId":"5a96e836abc9f47c36ef360c",
-         "firstname":"Joe",
-         "lastname":"Smith",
-         "email":"joe@gmail.com"
+      "referralHash":"0Ps92GB1Rg",
+      "referralChannel":"twitter",
+      "referralUserEmail":"referral@referralDomain.com",
+      "referralUserId":"a54babec729fab42be184e3f",
+      "email":"joe@gmail.com",
+      "firstname":"Joe",
+      "lastname":"Smith",
+      "ip":"141.52.35",
+      "subscriberId":"5a9d2de2e801f464911251b6",
+      "campaignId":"5a96e836abc9f47c36ef360c"
     },
 
     // If the resource can have fields that are custom on a per-user basis, define a function to fetch the custom
@@ -118,11 +126,16 @@ module.exports = {
     // outputFields: () => { return []; }
     // Alternatively, a static field definition should be provided, to specify labels for the fields
     outputFields: [
-      {key: 'subscriberId', label: 'Subscriber ID'},
-      {key: 'campaignId', label: 'Campaign ID'},
+      {key: 'referralHash', label: 'Referral Hash'},
+      {key: 'referralChannel', label: 'Referral Channel'},
+      {key: 'referralUserEmail', label: 'Referral User Email'},
+      {key: 'referralUserId', label: 'Referral User Id'},
+      {key: 'email', label: 'Email Address'},
       {key: 'firstname', label: 'First Name'},
       {key: 'lastname', label: 'Last Name'},
-      {key: 'email', label: 'Email Address'},
+      {key: 'ip', label: 'IP Address'},
+      {key: 'subscriberID', label: 'Subscriber ID'},
+      {key: 'campaignID', label: 'Campaign ID'},
     ]
   }
 };

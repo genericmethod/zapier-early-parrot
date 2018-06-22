@@ -2,7 +2,7 @@
 const registerHook = (z, bundle) => {
 
   const campaignId = bundle.inputData.campaignId;
-
+  
   z.console.log(`Zapier target url ${bundle.targetUrl}`);
 
   // bundle.targetUrl has the Hook URL this app should call when a subscriber is created.
