@@ -73,14 +73,14 @@ const getFallbackRealSubscriber = (z, bundle) => {
 // into the App definition at the end.
 module.exports = {
 
-  key: 'newSubscriberTrigger',
+  key: 'newReferralTrigger',
 
   // You'll want to provide some helpful display labels and descriptions
   // for users. Zapier will put them into the UX.
-  noun: 'New Subscriber',
+  noun: 'New Referral Trigger',
   display: {
-    label: 'New Subscriber',
-    description: 'Trigger when a new subscriber is added.'
+    label: 'New Referral Trigger',
+    description: 'Trigger when a new referral is added.'
   },
 
   // `operation` is where the business logic goes.
