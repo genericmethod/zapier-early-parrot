@@ -7,12 +7,7 @@ const authentication = require('./authentication');
 // It runs runs before each request is sent out, allowing you to make tweaks to the request in a centralized spot.
 const includeApiKey = (request, z, bundle) => {
   if (bundle.authData.apiKey) {
-    request.params = request.params || {};
-    request.params.api_key = bundle.authData.apiKey;
-    //
-    // request.headers.Authorization = bundle.authData.apiKey;
-    // (If you want to include the key as a header instead)
-    //
+    request.headers.Authorization = bundle.authData.apiKey;
   }
   return request;
 };
