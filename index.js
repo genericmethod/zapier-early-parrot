@@ -1,4 +1,8 @@
 const newSubscriberTrigger = require('./triggers/new-subscriber-trigger');
+const newReferredSubscriberTrigger = require('./triggers/new-referred-subscriber-trigger');
+const newReferralTrigger = require('./triggers/new-referral-trigger');
+const newInviteTrigger = require('./triggers/new-invite-trigger');
+const newRewardTrigger = require('./triggers/new-reward-trigger');
 const authentication = require('./authentication');
 
 
@@ -34,13 +38,13 @@ const App = {
   },
 
   // If you want your trigger to show up, you better include it here!
-  triggers: [
+  triggers: {
     newSubscriberTrigger, 
     newReferredSubscriberTrigger, 
     newRewardTrigger,
     newInviteTrigger,
     newReferralTrigger
-  ],
+  },
 
   // If you want your searches to show up, you better include it here!
   searches: {

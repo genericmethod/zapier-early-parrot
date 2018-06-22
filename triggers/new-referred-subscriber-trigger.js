@@ -102,8 +102,8 @@ module.exports = {
     performSubscribe: registerHook,
     performUnsubscribe: unregisterHook,
 
-    perform: getSubscriber,
-    performList: getFallbackRealSubscriber,
+    perform: getReferredSubscriber,
+    performList: getFallbackRealReferredSubscriber,
 
     // In cases where Zapier needs to show an example record to the user, but we are unable to get a live example
     // from the API, Zapier will fallback to this hard-coded sample. It should reflect the data structure of

@@ -126,25 +126,9 @@ module.exports = {
       {key: 'rewardId', label: 'Reward ID'},
       {key: 'rewardDescription', label: 'Reward Description'},
       {key: 'rewardImage', label: 'Reward Image URL'},
-      {key: 'point', label: 'ENumber of Points'},
+      {key: 'point', label: 'Number of Points'},
       {key: 'pointType', label: 'Type of Points'},
       {key: 'campaignId', label: 'Campaign ID'},
     ]
   }
 };
-
-/**
- * NewReward
-
-{
-  "email":"gaetano@earlyparrot.com",
-  "rewardId":123,
-  "rewardName" :”rewardName bla bla”,
-  "rewardDescription"::”rewardName description”,
-  "rewardImage"::”http://…..”,
-  "point"::1,
-  "pointType"::”referrals”,
-  "campaignId":"5a96e836abc9f47c36ef360c"
-}
-
- */
