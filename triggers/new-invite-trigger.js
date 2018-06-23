@@ -58,7 +58,7 @@ const getInvite = (z, bundle) => {
 const getFallbackRealInvite = (z, bundle) => {
   // For the test poll, you should get some real data, to aid the setup process.
   const options = {
-    url: 'http://5b1a857783b6190014ca3ad6.mockapi.io/api/subscriber', //TODO
+    url: 'http://5b1a857783b6190014ca3ad6.mockapi.io/api/invites', //TODO
     params: {
       campaignId: bundle.inputData.campaignId
     }
@@ -118,8 +118,8 @@ module.exports = {
     // outputFields: () => { return []; }
     // Alternatively, a static field definition should be provided, to specify labels for the fields
     outputFields: [
-      {key: 'inviteFromEmail', label: 'Subscriber ID'},
-      {key: 'inviteFromName', label: 'Campaign ID'},
+      {key: 'inviteFromEmail', label: 'Invite From Email'},
+      {key: 'inviteFromName', label: 'Invite From Name'},
       {key: 'email', label: 'Email'},
       {key: 'couponCode', label: 'Coupon Code'},
       {key: 'referUrl', label: 'Refer Url'},

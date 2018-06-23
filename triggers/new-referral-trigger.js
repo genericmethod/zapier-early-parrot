@@ -58,7 +58,7 @@ const getReferral = (z, bundle) => {
 const getFallbackRealReferral = (z, bundle) => {
   // For the test poll, you should get some real data, to aid the setup process.
   const options = {
-    url: 'http://5b1a857783b6190014ca3ad6.mockapi.io/api/subscriber', //TODO
+    url: 'http://5b1a857783b6190014ca3ad6.mockapi.io/api/referrals', //TODO
     params: {
       campaignId: bundle.inputData.campaignId
     }
